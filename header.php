@@ -35,6 +35,7 @@
 	?></title>
 <link rel="profile" href="http://gmpg.org/xfn/11" />
 <link rel="stylesheet" type="text/css" media="all" href="<?php echo get_bloginfo('template_url') . '/bootstrap/css/bootstrap.css'; ?>" />
+<link rel="stylesheet" type="text/css" media="all" href="<?php echo get_bloginfo('template_url') . '/css/style.css'; ?>" />
 <?php if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) wp_enqueue_script( 'comment-reply' ); ?>
 <link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>" />
 <!--[if lt IE 9]>

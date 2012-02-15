@@ -109,3 +109,10 @@ add_action( 'wp_enqueue_scripts', '_s_scripts' );
  * Implement the Custom Header feature
  */
 //require( get_template_directory() . '/inc/custom-header.php' );
+
+wp_enqueue_script('jquery');
+wp_enqueue_script('underscore', get_template_directory_uri() . '/js/underscore-min.js');
+wp_enqueue_script('backbone', get_template_directory_uri() . '/js/backbone-min.js', array('underscore'));
+wp_enqueue_script('front-page', get_template_directory_uri() . '/js/front-page.js', array('jquery', 'backbone'));
+require( get_template_directory() . '/cpt/PostType.php');
+PostType::init();
