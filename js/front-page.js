@@ -1,6 +1,8 @@
 jQuery(document).ready(function($) {
 	var Assignment = Backbone.Model.extend({  
 		initialize: function(){  
+			this.submissionCollection = new SubmissionCollection();
+			this.submissionCollection.url = 'wp-admin/admin-ajax.php?action=backbone&model=photocollections&assignment_id=' + this.get('term_id')
 		},  
 		defaults: {  
 			title: 'Default title',  
@@ -11,6 +13,13 @@ jQuery(document).ready(function($) {
 	var AssignmentCollection = Backbone.Collection.extend({
 		model: Assignment,
 		url: 'wp-admin/admin-ajax.php?action=backbone&model=assignments'
+	});
+
+	var Submission = Backbone.Model.extend({
+	});
+
+	var SubmissionCollection = Backbone.Collection.extend({
+		model: Submission
 	});
 
 	var AssignmentView = Backbone.View.extend({
@@ -33,13 +42,41 @@ jQuery(document).ready(function($) {
 			return this;
 		},
 		appendAssignment: function(assignment) {
-			var list_item = $('<li><a href="#'+assignment.get('term_id')+'">'+assignment.get('name')+'</a></li>');
+			var list_item = $('<li><a data-toggle="tab" href="#'+assignment.get('term_id')+'">'+assignment.get('name')+'</a></li>');
 			this.$el.append(list_item);
 		},
 		appendAssignments: function(assignments) {
-			console.log(assignments);
 			assignments.each(this.appendAssignment);
-			$('ll:eq(0)', this.$el).addClass('active');
+			$('li:eq(0)', this.$el).addClass('active');
+		}
+	});
+
+	var TabView = Backbone.View.extend({
+		tagName: 'div',
+		className: 'tab-pane',
+		initialize: function() {
+			_.bindAll(this, 'render', 'appendSubmissions', 'appendSubmission');
+			this.model.submissionCollection.bind('reset', this.appendSubmissions);
+			this.model.submissionCollection.fetch();
+		},
+		render: function() {
+			this.$el.attr('id', this.model.get('term_id'));
+			this.$el.append('<h2>' + this.model.get('name') + '</h2>');
+			return this;
+		},
+		appendSubmission: function(submission) {
+			this.$el.append("<h3>"+submission.get('title')+"</h3>");
+			this.$el.append("<cite>"+submission.get('author')+"</cite>");
+			var thumbs = $('<ul class="thumbnails"></ul>');
+			_.each(submission.get('attachments'), function(e, i) {
+				thumbs.append("<li class=\"span3\"><a href=\"#\" class=\"thumbnail\">"+e.medium+"</a></li>");
+			});
+			console.log(thumbs);
+			this.$el.append(thumbs);
+		},
+		appendSubmissions: function(submissions) {
+			console.log(submissions);
+			submissions.each(this.appendSubmission);
 		}
 	});
 
@@ -53,7 +90,10 @@ jQuery(document).ready(function($) {
 			return this;
 		},
 		appendTab: function(assignment) {
-			this.$el.append('<div class="tab-pane" id="'+assignment.get('term_id')+'">hello</div>');
+			var tab = new TabView({
+				model: assignment
+			});
+			this.$el.append(tab.render().el);
 		},
 		appendTabs: function(assignments) {
 			assignments.each(this.appendTab);
