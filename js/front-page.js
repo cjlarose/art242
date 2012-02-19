@@ -1,19 +1,38 @@
 jQuery(document).ready(function($) {
-	var Assignment = Backbone.Model.extend({  
+	window.Assignment = Backbone.Model.extend({  
 		initialize: function(){  
 		},  
 		defaults: {  
-			name: 'Default title',  
+			title: 'Default title',  
 			releaseDate: 2011,  
 		}  
 	});  
 
-	var AssignmentCollection = Backbone.Collection.extend({
+	window.AssignmentCollection = Backbone.Collection.extend({
 		model: Assignment,
-		url: '/assignments'
+		url: 'http://localhost/wordpress/wp-content/themes/art242/backbone.php'
 	});
 
-	assignments = new AssignmentCollection;
-	assignments.fetch();
-//	$('body').css('backgroundColor', '#f60');
+	window.AssignmentView = Backbone.View.extend({
+		tagname: 'div',
+		className: 'assignment', 
+		render: function() {
+			$(this.el).html(this.model.get('title'));
+		}
+	});
+	
+	window.assignments = new AssignmentCollection;
+	window.AppView = Backbone.View.extend({
+		el: $('#appview'),
+		initialize: function() {
+			assignments.bind('all', this.render, this);
+			assignments.fetch();
+			console.log(assignments);
+		},
+		render: function() {
+			$(this.el).html('hello');
+		}
+	});
+
+	window.App = new AppView;
 });

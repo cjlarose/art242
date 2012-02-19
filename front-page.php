@@ -20,10 +20,12 @@ get_header(); ?>
 					<?php get_template_part( 'content', 'page' ); ?>
 
 				<?php endwhile; // end of the loop. ?>
-				<?php $photos = PhotoCollectionCPT::get_all(); var_dump($photos); ?>
-				<div id="collections">
-				</div>
-				<div id="projects">
+				<?php $photos = PhotoCollectionCPT::get_all(); //var_dump($photos); ?>
+				<div id="appview">
+					<div id="collections">
+					</div>
+					<div id="projects">
+					</div>
 				</div>
 			</div><!-- #content -->
 		</div><!-- #primary .site-content -->
