@@ -46,20 +46,30 @@ class PhotoCollectionCPT extends PostType {
 			$datum = new stdClass();
 			$datum->title = $post->post_title;
 			$datum->attachments = array();
-			$attachments = get_children(array(
+			$user_data = get_userdata($post->post_author);
+			$datum->author = (!empty($user_data->first_name)) ? $user_data->first_name . " " . $user_data->last_name : $user_data->user_login;
+			$attachments = attachments_get_attachments($post->ID);
+			/*$attachments = get_children(array(
 				'post_type' => 'attachment',
 				'post_parent' => $post->ID
-			));
+			));*/
 			foreach ($attachments as $attachment) {
 				$post_attachment = new stdClass();
+				foreach ($attachment as $key => $value) {
+					if ($key == 'id')
+						$key = 'ID';
+					if ($key == 'caption')
+						$value = empty($value) ? NULL : $value;
+					if (in_array($key, array('ID', 'order')))
+						$value = $value * 1;
+					$post_attachment->$key = $value;
+				}
 				foreach (array('thumbnail', 'medium', 'large', 'full') as $size) {
-					$attributes = wp_get_attachment_image_src($attachment->ID, $size);
+					$attributes = wp_get_attachment_image_src($attachment['id'], $size);
 					$post_attachment->$size = "<img src=\"" . $attributes[0] . "\" width=\"{$attributes[1]}\" height=\"{$attributes[2]}\"/>";
 				}
 				$datum->attachments[] = $post_attachment;
 			}
-			$user_data = get_userdata($post->post_author);
-			$datum->author = (!empty($user_data->first_name)) ? $user_data->first_name . " " . $user_data->last_name : $user_data->user_login;
 			$data[] = $datum;
 		}	
 		return $data;

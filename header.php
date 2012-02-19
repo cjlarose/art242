@@ -61,10 +61,12 @@
 				<div class="container">
 					<a class="brand" href="<?php echo home_url( '/' ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a>
 					<ul class="nav">
-					<li class="active"><a href="#">Home</a></li>
-					<li><a href="#">Link</a></li>
-					<li><a href="#">Link</a></li>
+						<li class="active"><a href="#">Home</a></li>
+						<li><a href="#">Link</a></li>
+						<li><a href="#">Link</a></li>
 					</ul>
+					<?php $current_user = wp_get_current_user(); ?>
+					<p class="navbar-text pull-right">Logged in as <a href="<?php echo admin_url(); ?>"><?php echo $current_user->user_login; ?></a></p>
 				</div>
 			</div>
 		</div>
