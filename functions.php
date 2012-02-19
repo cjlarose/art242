@@ -102,6 +102,13 @@ add_action( 'init', '_s_widgets_init' );
 function _s_scripts() {
 	wp_enqueue_script( 'jquery' );
 	wp_enqueue_script( 'small-menu', get_template_directory_uri() . '/js/small-menu.js', 'jquery', '20120206', true );
+	
+	wp_register_script('underscore', get_template_directory_uri() . '/js/underscore-min.js');
+	wp_register_script('backbone', get_template_directory_uri() . '/js/backbone-min.js', array('underscore', 'jquery'));
+	wp_register_script('front-page', get_template_directory_uri() . '/js/front-page.js', array('backbone'));
+	if (is_front_page()) {
+		wp_enqueue_script('front-page');
+	}
 }
 add_action( 'wp_enqueue_scripts', '_s_scripts' );
 
@@ -110,9 +117,9 @@ add_action( 'wp_enqueue_scripts', '_s_scripts' );
  */
 //require( get_template_directory() . '/inc/custom-header.php' );
 
-wp_enqueue_script('jquery');
-wp_enqueue_script('underscore', get_template_directory_uri() . '/js/underscore-min.js');
-wp_enqueue_script('backbone', get_template_directory_uri() . '/js/backbone-min.js', array('underscore'));
-wp_enqueue_script('front-page', get_template_directory_uri() . '/js/front-page.js', array('jquery', 'backbone'));
 require( get_template_directory() . '/cpt/PostType.php');
 PostType::init();
+
+include 'cpt/Backbone.php';
+add_action('wp_ajax_backbone', array('Backbone', 'init'));
+add_action('wp_ajax_nopriv_backbone', array('Backbone', 'init'));

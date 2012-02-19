@@ -1,4 +1,22 @@
 <?php
 
-$data = array((object) array('title' => 1, 'date' => 2, 'photos' => 3));
-echo json_encode($data);
+class Backbone {
+
+	static function init() {
+		$model = $_GET['model'];
+		call_user_func(array(self, $model));
+	}
+
+	static function assignments() {
+		$data = AssignmentTax::get_all();
+		self::json($data);
+	}
+
+	static function json($data) {
+		header('Cache-Control: no-cache, must-revalidate');
+		header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+		header('Content-type: application/json');
+		echo json_encode($data);
+		die();
+	}
+}

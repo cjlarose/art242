@@ -15,6 +15,7 @@ class PhotoCollectionCPT extends PostType {
 			'show_ui' => TRUE,
 			'rewrite' => array('slug' => 'photo-collection'),
 			'supports' => array('title', 'editor', 'author', 'custom-fields'),
+			'taxonomies' => array('art242_assignment'),
 		);
 		register_post_type(self::post_type, $args);
 	}
@@ -27,5 +28,17 @@ class PhotoCollectionCPT extends PostType {
 			'order' => 'ASC'
 		);
 		return new WP_Query($args);
+	}
+
+	static public function get_all_objects() {
+		$query = $this->get_all();
+		$posts = $query->posts;
+		$data = array();
+		foreach ($posts as $post) {
+			$datum = new stdClass();
+			$datum->title = $post->post_title;
+			$data[] = $datum;
+		}	
+		return $data;
 	}
 }

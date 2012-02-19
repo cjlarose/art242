@@ -1,5 +1,5 @@
 jQuery(document).ready(function($) {
-	window.Assignment = Backbone.Model.extend({  
+	var Assignment = Backbone.Model.extend({  
 		initialize: function(){  
 		},  
 		defaults: {  
@@ -8,12 +8,12 @@ jQuery(document).ready(function($) {
 		}  
 	});  
 
-	window.AssignmentCollection = Backbone.Collection.extend({
+	var AssignmentCollection = Backbone.Collection.extend({
 		model: Assignment,
-		url: 'http://localhost/wordpress/wp-content/themes/art242/backbone.php'
+		url: 'wp-admin/admin-ajax.php?action=backbone&model=assignments'
 	});
 
-	window.AssignmentView = Backbone.View.extend({
+	var AssignmentView = Backbone.View.extend({
 		tagname: 'div',
 		className: 'assignment', 
 		render: function() {
@@ -21,18 +21,60 @@ jQuery(document).ready(function($) {
 		}
 	});
 	
-	window.assignments = new AssignmentCollection;
-	window.AppView = Backbone.View.extend({
-		el: $('#appview'),
+	var assignments = new AssignmentCollection;
+	var AssignmentListView = Backbone.View.extend({
+		el: $('<ul id="assignments"></ul>'),
 		initialize: function() {
-			assignments.bind('all', this.render, this);
-			assignments.fetch();
-			console.log(assignments);
+			_.bindAll(this, 'render', 'appendAssignment', 'appendAssignments');
+			assignments.bind('reset', this.appendAssignments, this);
 		},
 		render: function() {
-			$(this.el).html('hello');
+			this.$el.addClass('nav nav-tabs');
+			return this;
+		},
+		appendAssignment: function(assignment) {
+			var list_item = $('<li><a href="#'+assignment.get('term_id')+'">'+assignment.get('name')+'</a></li>');
+			this.$el.append(list_item);
+		},
+		appendAssignments: function(assignments) {
+			console.log(assignments);
+			assignments.each(this.appendAssignment);
+			$('ll:eq(0)', this.$el).addClass('active');
 		}
 	});
 
-	window.App = new AppView;
+	var TabContentView = Backbone.View.extend({
+		el: $('<div class="tab-content"></div>'),
+		initialize: function() {
+			_.bindAll(this, 'render', 'appendTab', 'appendTabs');
+			assignments.bind('reset', this.appendTabs, this);
+		},
+		render: function() {
+			return this;
+		},
+		appendTab: function(assignment) {
+			this.$el.append('<div class="tab-pane" id="'+assignment.get('term_id')+'">hello</div>');
+		},
+		appendTabs: function(assignments) {
+			assignments.each(this.appendTab);
+			$('.tab-pane:eq(0)', this.$el).addClass('active');
+		}
+	});
+
+	var AppView = Backbone.View.extend({
+		el: $('#appview'),
+		initialize: function() {
+			this.render();
+			assignments.fetch();
+		},
+		render: function() {
+			this.$el.addClass('tabbable tabs-left');
+			assignmentList = new AssignmentListView();
+			this.$el.append(assignmentList.render().el);
+			tabContent = new TabContentView();
+			this.$el.append(tabContent.render().el);
+		}
+	});
+
+	var App = new AppView;
 });

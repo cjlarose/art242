@@ -4,6 +4,8 @@ class PostType {
 
 	public static function init() {
 		require( get_template_directory() . '/cpt/PhotoCollectionCPT.php');
+		require( get_template_directory() . '/cpt/AssignmentTax.php');
+		AssignmentTax::init();
 		PhotoCollectionCPT::init();
 	}
 
