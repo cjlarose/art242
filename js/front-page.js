@@ -7,7 +7,8 @@ jQuery(document).ready(function($) {
 		defaults: {  
 			title: 'Default title',  
 			releaseDate: 2011,  
-		}  
+		},
+		idAttribute: 'term_id'
 	});  
 
 	var AssignmentCollection = Backbone.Collection.extend({
@@ -30,24 +31,23 @@ jQuery(document).ready(function($) {
 		}
 	});
 	
-	var assignments = new AssignmentCollection;
 	var AssignmentListView = Backbone.View.extend({
 		el: $('<ul id="assignments"></ul>'),
 		initialize: function() {
 			_.bindAll(this, 'render', 'appendAssignment', 'appendAssignments');
-			assignments.bind('reset', this.appendAssignments, this);
+			this.model.bind('reset', this.appendAssignments, this);
 		},
 		render: function() {
 			this.$el.addClass('nav nav-tabs');
 			return this;
 		},
 		appendAssignment: function(assignment) {
-			var list_item = $('<li><a data-toggle="tab" href="#'+assignment.get('term_id')+'">'+assignment.get('name')+'</a></li>');
+			var list_item = $('<li><a href="#assignment/'+assignment.get('term_id')+'">'+assignment.get('name')+'</a></li>');
 			this.$el.append(list_item);
 		},
 		appendAssignments: function(assignments) {
 			assignments.each(this.appendAssignment);
-			$('li:eq(0)', this.$el).addClass('active');
+			//$('li:eq(0)', this.$el).find('a').tab('show');
 		}
 	});
 
@@ -57,11 +57,13 @@ jQuery(document).ready(function($) {
 		initialize: function() {
 			_.bindAll(this, 'render', 'appendSubmissions', 'appendSubmission');
 			this.model.submissionCollection.bind('reset', this.appendSubmissions);
-			this.model.submissionCollection.fetch();
+			//target.bind('show', this.render);
+			//this.model.submissionCollection.fetch();
 		},
 		render: function() {
-			this.$el.attr('id', this.model.get('term_id'));
+			this.$el.attr('id','assignment' +  this.model.get('term_id'));
 			this.$el.append('<h2>' + this.model.get('name') + '</h2>');
+			this.appendSubmissions(this.model.submissionCollection);
 			return this;
 		},
 		appendSubmission: function(submission) {
@@ -83,8 +85,7 @@ jQuery(document).ready(function($) {
 	var TabContentView = Backbone.View.extend({
 		el: $('<div class="tab-content"></div>'),
 		initialize: function() {
-			_.bindAll(this, 'render', 'appendTab', 'appendTabs');
-			assignments.bind('reset', this.appendTabs, this);
+			_.bindAll(this, 'render', 'appendTab');
 		},
 		render: function() {
 			return this;
@@ -94,27 +95,48 @@ jQuery(document).ready(function($) {
 				model: assignment
 			});
 			this.$el.append(tab.render().el);
-		},
-		appendTabs: function(assignments) {
-			assignments.each(this.appendTab);
-			$('.tab-pane:eq(0)', this.$el).addClass('active');
 		}
 	});
 
 	var AppView = Backbone.View.extend({
 		el: $('#appview'),
 		initialize: function() {
+			_.bindAll(this, 'render');
 			this.render();
-			assignments.fetch();
 		},
 		render: function() {
 			this.$el.addClass('tabbable tabs-left');
-			assignmentList = new AssignmentListView();
+			assignmentList = new AssignmentListView({model: this.model});
 			this.$el.append(assignmentList.render().el);
-			tabContent = new TabContentView();
+			tabContent = new TabContentView({model: this.model});
 			this.$el.append(tabContent.render().el);
 		}
 	});
 
-	var App = new AppView;
+	var AppRouter = Backbone.Router.extend({
+		routes: {
+			"": "list",
+			"assignment/:id" : "assignmentDetails"
+		},
+		list: function() {
+			this.assignments = new AssignmentCollection();
+			var appView = new AppView({model: this.assignments});
+			this.assignments.fetch();
+		},
+		assignmentDetails: function(id) {
+			$('.nav-tabs li').removeClass('active');
+			console.log($('a[href="#assignment/' + id + '"]'));
+			$('a[href="#assignment/' + id + '"]').parent().addClass('active');
+			var assignment = this.assignments.get(id);
+			var tab = new TabView({model: assignment});
+			$('.tab-content').append(tab.render().el);
+			tab.$el.siblings().removeClass('active');
+			tab.$el.addClass('active');
+			if (assignment.submissionCollection.length == 0)
+				assignment.submissionCollection.fetch();
+		}
+	});
+
+	var App = new AppRouter();
+	Backbone.history.start();
 });

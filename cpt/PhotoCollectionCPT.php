@@ -64,6 +64,8 @@ class PhotoCollectionCPT extends PostType {
 					$attributes = wp_get_attachment_image_src($attachment['id'], $size);
 					$post_attachment->$size = "<img src=\"" . $attributes[0] . "\" width=\"{$attributes[1]}\" height=\"{$attributes[2]}\"/>";
 				}
+				$metadata = wp_get_attachment_metadata($attachment['id']);
+				$post_attachment->metadata = $metadata;
 				$datum->attachments[] = $post_attachment;
 			}
 			$data[] = $datum;
