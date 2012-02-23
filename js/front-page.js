@@ -113,6 +113,8 @@ jQuery(document).ready(function($) {
 		}
 	});
 
+	var Assignments = new AssignmentCollection();
+
 	var AppRouter = Backbone.Router.extend({
 		routes: {
 			"": "list",
@@ -120,8 +122,11 @@ jQuery(document).ready(function($) {
 			"photo/:id" : "photoDetails"
 		},
 		list: function() {
-			this.assignments = new AssignmentCollection();
+			this.assignments = Assignments;
 			var appView = new AppView({model: this.assignments});
+			this.assignments.bind('reset', function() {
+				App.navigate('assignment/' + Assignments.at(0).id, true);
+			});
 			this.assignments.fetch();
 		},
 		assignmentDetails: function(id) {
