@@ -71,7 +71,7 @@ jQuery(document).ready(function($) {
 			this.$el.append("<cite>"+submission.get('author')+"</cite>");
 			var thumbs = $('<ul class="thumbnails"></ul>');
 			_.each(submission.get('attachments'), function(e, i) {
-				thumbs.append("<li class=\"span3\"><a href=\"#\" class=\"thumbnail\">"+e.span3+"</a></li>");
+				thumbs.append("<li class=\"span3\"><a href=\"#photo/"+e.ID+"\" class=\"thumbnail\">"+e.span3+"</a></li>");
 			});
 			console.log(thumbs);
 			this.$el.append(thumbs);
@@ -116,7 +116,8 @@ jQuery(document).ready(function($) {
 	var AppRouter = Backbone.Router.extend({
 		routes: {
 			"": "list",
-			"assignment/:id" : "assignmentDetails"
+			"assignment/:id" : "assignmentDetails",
+			"photo/:id" : "photoDetails"
 		},
 		list: function() {
 			this.assignments = new AssignmentCollection();
@@ -134,6 +135,9 @@ jQuery(document).ready(function($) {
 			tab.$el.addClass('active');
 			if (assignment.submissionCollection.length == 0)
 				assignment.submissionCollection.fetch();
+		},
+		photoDetails: function(id) {
+			console.log('photo' + id);
 		}
 	});
 
