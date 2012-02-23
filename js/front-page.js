@@ -121,25 +121,35 @@ jQuery(document).ready(function($) {
 			"assignment/:id" : "assignmentDetails",
 			"photo/:id" : "photoDetails"
 		},
-		list: function() {
+		list: function(cb) {
 			this.assignments = Assignments;
 			var appView = new AppView({model: this.assignments});
-			this.assignments.bind('reset', function() {
-				App.navigate('assignment/' + Assignments.at(0).id, true);
-			});
+			if (cb == undefined) {
+				cb = function() {
+					App.navigate('assignment/' + Assignments.at(0).id, true);
+				}
+			}
+			this.assignments.bind('reset', cb);
 			this.assignments.fetch();
 		},
 		assignmentDetails: function(id) {
-			$('.nav-tabs li').removeClass('active');
-			console.log($('a[href="#assignment/' + id + '"]'));
-			$('a[href="#assignment/' + id + '"]').parent().addClass('active');
-			var assignment = this.assignments.get(id);
-			var tab = new TabView({model: assignment});
-			$('.tab-content').append(tab.render().el);
-			tab.$el.siblings().removeClass('active');
-			tab.$el.addClass('active');
-			if (assignment.submissionCollection.length == 0)
-				assignment.submissionCollection.fetch();
+			action = function() {
+				$('.nav-tabs li').removeClass('active');
+				console.log($('a[href="#assignment/' + id + '"]'));
+				$('a[href="#assignment/' + id + '"]').parent().addClass('active');
+				var assignment = Assignments.get(id);
+				var tab = new TabView({model: assignment});
+				$('.tab-content').append(tab.render().el);
+				tab.$el.siblings().removeClass('active');
+				tab.$el.addClass('active');
+				if (assignment.submissionCollection.length == 0)
+					assignment.submissionCollection.fetch();
+			};
+			if (this.assignments == undefined) {
+				this.list(action);
+			} else {
+				action();
+			}
 		},
 		photoDetails: function(id) {
 			console.log('photo' + id);
