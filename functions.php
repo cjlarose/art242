@@ -132,3 +132,6 @@ add_action('wp_ajax_nopriv_backbone', array('Backbone', 'init'));
 if ( function_exists( 'add_image_size' ) ) { 
 	add_image_size( 'span3', 260, 180, true); 
 }
+
+/* disable admin bar */
+add_filter('show_admin_bar', '__return_false');  
