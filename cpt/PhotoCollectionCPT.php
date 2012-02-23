@@ -18,6 +18,9 @@ class PhotoCollectionCPT extends PostType {
 			'taxonomies' => array('art242_assignment'),
 		);
 		register_post_type(self::post_type, $args);
+		add_action('add_meta_boxes', function() {
+			add_meta_box('select-assignment-meta', "Select Assignment", array('PhotoCollectionCPT', 'assignment_meta'), 'art242_photocoll', 'side');
+		});
 	}
 	
 	static public function get_all() {
@@ -73,5 +76,15 @@ class PhotoCollectionCPT extends PostType {
 			$data[] = $datum;
 		}	
 		return $data;
+	}
+
+	static public function assignment_meta($post) {
+		$assignments = AssignmentTax::get_all();
+		$post_terms = get_the_terms($post->ID, AssignmentTax::tax_name);
+		foreach ($assignments as $assignment) {
+			echo "<label><input ".(($assignment->term_id == $post_terms[0]->term_id)?' checked="checked"':'')."type=\"radio\" name=\"assignment\" value=\"{$assignment->term_id}\" />{$assignment->name}</label>";
+			echo "<br />";
+		}
+		echo "<textarea name=\"tax_input[".AssignmentTax::tax_name."]\">".$post_terms[0]->name."</textarea>";
 	}
 }
