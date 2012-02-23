@@ -71,7 +71,7 @@ jQuery(document).ready(function($) {
 			this.$el.append("<cite>"+submission.get('author')+"</cite>");
 			var thumbs = $('<ul class="thumbnails"></ul>');
 			_.each(submission.get('attachments'), function(e, i) {
-				thumbs.append("<li class=\"span3\"><a href=\"#photo/"+e.ID+"\" class=\"thumbnail\">"+e.span3+"</a></li>");
+				thumbs.append("<li class=\"span3\"><a rel=\"lightbox\" href=\""+e.full_src+"\" class=\"thumbnail\">"+e.span3+"</a></li>");
 			});
 			console.log(thumbs);
 			this.$el.append(thumbs);
