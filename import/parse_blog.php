@@ -1,8 +1,5 @@
 <?php
 
-$user = $_GET['user'];
-
-$url = "http://{$user}.blogspot.com?v=0";
 
 function get_data($url)
 {
@@ -42,35 +39,41 @@ function save_image($img,$fullpath){
     fclose($fp);
 }
 
-$data = get_data($url);
-$dom = new DOMDocument();
-$dom->preserveWhiteSpace = false; 
-@$dom->loadHtml($data);
-$xpath = new DOMXPath($dom);
-$posts = $xpath->query("//div[contains(@class,'hentry')]");
+function parse_blog($user) {
+	$url = "http://{$user}.blogspot.com?v=0";
+	$data = get_data($url);
+	$dom = new DOMDocument();
+	$dom->preserveWhiteSpace = false; 
+	@$dom->loadHtml($data);
+	$xpath = new DOMXPath($dom);
+	$posts = $xpath->query("//div[contains(@class,'hentry')]");
 
-$data = array();
-foreach ( $posts as $post )
-{
-	$post_object = new stdClass();
-	$html = get_inner_html($post);
-	$html = str_replace("\n", "", $html);
-	$html = str_replace("\r", "", $html);
-	preg_match('/<h3.*?><a.*?>(.*)<\/a><\/h3>/', $html, $matches);
-	$post_object->header = $matches[1];
+	$data = array();
+	foreach ( $posts as $post )
+	{
+		$post_object = new stdClass();
+		$html = get_inner_html($post);
+		$html = str_replace("\n", "", $html);
+		$html = str_replace("\r", "", $html);
+		preg_match('/<h3.*?><a.*?>(.*)<\/a><\/h3>/', $html, $matches);
+		$post_object->header = $matches[1];
 
-	//$post_object->html = $html;
-	preg_match_all('/href="([^"]*?\.(jpg|JPG|png))"/', $html, $matches2);
-	$post_object->images = $matches2[1];
+		//$post_object->html = $html;
+		preg_match_all('/href="([^"]*?\.(jpg|JPG|png))"/', $html, $matches2);
+		$post_object->images = $matches2[1];
 
-/*	$ps = $xpath->query("div[contains(@class,'entry-content')]", $post);
-	foreach ($ps  as $p) {
-		$post_object->ps[] = $p->textContent;
-	}*/
+	/*	$ps = $xpath->query("div[contains(@class,'entry-content')]", $post);
+		foreach ($ps  as $p) {
+			$post_object->ps[] = $p->textContent;
+		}*/
 
-	$data[] = $post_object; 
+		$data[] = $post_object; 
+	}
+	return $data;
 }
 
-echo "<pre>";
-echo json_encode($data);
-echo "</pre>";
+if (array_key_exists('user', $_GET)) {
+	echo "<pre>";
+	echo json_encode(parse_blog($_GET['user']));
+	echo "</pre>";
+}
