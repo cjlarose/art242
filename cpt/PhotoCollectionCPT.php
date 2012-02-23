@@ -82,9 +82,9 @@ class PhotoCollectionCPT extends PostType {
 		$assignments = AssignmentTax::get_all();
 		$post_terms = get_the_terms($post->ID, AssignmentTax::tax_name);
 		foreach ($assignments as $assignment) {
-			echo "<label><input ".(($assignment->term_id == $post_terms[0]->term_id)?' checked="checked"':'')."type=\"radio\" name=\"assignment\" value=\"{$assignment->term_id}\" />{$assignment->name}</label>";
+			echo "<label><input ".(($assignment->term_id == $post_terms[0]->term_id)?' checked="checked"':'')."type=\"radio\" name=\"assignment\" value=\"{$assignment->name}\" />{$assignment->name}</label>";
 			echo "<br />";
 		}
-		echo "<textarea name=\"tax_input[".AssignmentTax::tax_name."]\">".$post_terms[0]->name."</textarea>";
+		echo "<textarea class=\"hide-if-js\" name=\"tax_input[".AssignmentTax::tax_name."]\">".$post_terms[0]->name."</textarea>";
 	}
 }

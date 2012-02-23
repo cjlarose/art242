@@ -11,7 +11,8 @@ class AssignmentTax {
 				'name' => __('Assignments'),
 				'singular_name' => __('Assignment')
 			),
-			'show_ui' => true,
+			'public' => true,
+			'show_ui' => false,
 			'rewrite' => array('slug' => 'assignment')
 		));
 	}
