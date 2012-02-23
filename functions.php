@@ -111,8 +111,12 @@ function _s_scripts() {
 		wp_enqueue_script('front-page');
 	}
 }
+function admin_scripts() {
+	wp_register_script('admin', get_template_directory_uri() . '/js/admin.js', array('jquery'));
+	wp_enqueue_script('admin');
+}
 add_action( 'wp_enqueue_scripts', '_s_scripts' );
-
+add_action( 'admin_enqueue_scripts', 'admin_scripts');
 /**
  * Implement the Custom Header feature
  */
