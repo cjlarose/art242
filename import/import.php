@@ -34,7 +34,7 @@ foreach ($blog_data as $i => $post) {
 	foreach ($post->images as $image_url) {
 		$url_parts = parse_url($image_url);
 		$save_location = $save_dir . '/' . basename($url_parts['path']);
-//		save_image($image_url, $save_location);
+		save_image($image_url, $save_location);
 	}
 }
 
