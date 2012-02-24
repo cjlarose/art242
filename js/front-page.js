@@ -2,11 +2,16 @@ jQuery(document).ready(function($) {
 	var Assignment = Backbone.Model.extend({  
 		initialize: function(){  
 			this.submissionCollection = new SubmissionCollection();
-			this.submissionCollection.url = 'wp-admin/admin-ajax.php?action=backbone&model=photocollections&assignment_id=' + this.get('term_id')
+			this.submissionCollection.url = 'wp-admin/admin-ajax.php?action=backbone&model=photocollections&assignment_id=' + this.get('term_id');
+			this.submissionCollection.bind('reset', function(submissions) {
+				submissions.each(function(e, i) {
+					e.photos = new PhotoCollection(e.get('photos'));
+					Photos.add(e.get('photos'));
+				});
+				console.log(Photos);
+			});
 		},  
 		defaults: {  
-			title: 'Default title',  
-			releaseDate: 2011,  
 		},
 		idAttribute: 'term_id'
 	});  
@@ -17,10 +22,21 @@ jQuery(document).ready(function($) {
 	});
 
 	var Submission = Backbone.Model.extend({
+		initialize: function() {
+			this.photos = new PhotoCollection();
+		}
 	});
 
 	var SubmissionCollection = Backbone.Collection.extend({
 		model: Submission
+	});
+
+	var Photo = Backbone.Model.extend({
+		
+	});
+
+	var PhotoCollection = Backbone.Collection.extend({
+		model: Photo
 	});
 
 	var AssignmentView = Backbone.View.extend({
@@ -70,14 +86,14 @@ jQuery(document).ready(function($) {
 			this.$el.append("<h3>"+submission.get('title')+"<small>"+submission.get('author')+"</small></h3>");
 			var thumbs = $('<ul class="thumbnails"></ul>');
 			var self = this;
-			_.each(submission.get('attachments'), function(e, i) {
-				thumbs.append("<li class=\"span3\"><a rel=\"lightbox["+self.$el.attr('id')+"]\" href=\""+e.full_src+"\" class=\"thumbnail\">"+e.span3+"</a></li>");
+			_.each(submission.photos.models, function(photo, i) {
+				thumbs.append('<li class="span3"><a href="#photo/'+photo.get('ID')+'" class="thumbnail">'+photo.get('span3')+'</a></li>');
 			});
-			console.log(thumbs);
+			//console.log(thumbs);
 			this.$el.append(thumbs);
 		},
 		appendSubmissions: function(submissions) {
-			console.log(submissions);
+			//console.log(submissions);
 			submissions.each(this.appendSubmission);
 		}
 	});
@@ -114,6 +130,7 @@ jQuery(document).ready(function($) {
 	});
 
 	var Assignments = new AssignmentCollection();
+	var Photos = new PhotoCollection();
 
 	var AppRouter = Backbone.Router.extend({
 		routes: {
@@ -135,7 +152,7 @@ jQuery(document).ready(function($) {
 		assignmentDetails: function(id) {
 			action = function() {
 				$('.nav-tabs li').removeClass('active');
-				console.log($('a[href="#assignment/' + id + '"]'));
+				//console.log($('a[href="#assignment/' + id + '"]'));
 				$('a[href="#assignment/' + id + '"]').parent().addClass('active');
 				var assignment = Assignments.get(id);
 				var tab = new TabView({model: assignment});

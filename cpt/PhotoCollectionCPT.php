@@ -48,7 +48,7 @@ class PhotoCollectionCPT extends PostType {
 		foreach ($posts as $post) {
 			$datum = new stdClass();
 			$datum->title = $post->post_title;
-			$datum->attachments = array();
+			$datum->photos = array();
 			$user_data = get_userdata($post->post_author);
 			$datum->author = (!empty($user_data->first_name)) ? $user_data->first_name . " " . $user_data->last_name : $user_data->user_login;
 			$attachments = attachments_get_attachments($post->ID);
@@ -71,7 +71,7 @@ class PhotoCollectionCPT extends PostType {
 				}
 				$metadata = wp_get_attachment_metadata($attachment['id']);
 				$post_attachment->metadata = $metadata;
-				$datum->attachments[] = $post_attachment;
+				$datum->photos[] = $post_attachment;
 			}
 			$data[] = $datum;
 		}	
