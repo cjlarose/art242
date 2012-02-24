@@ -67,8 +67,7 @@ jQuery(document).ready(function($) {
 			return this;
 		},
 		appendSubmission: function(submission) {
-			this.$el.append("<h3>"+submission.get('title')+"</h3>");
-			this.$el.append("<cite>"+submission.get('author')+"</cite>");
+			this.$el.append("<h3>"+submission.get('title')+"<small>"+submission.get('author')+"</small></h3>");
 			var thumbs = $('<ul class="thumbnails"></ul>');
 			var self = this;
 			_.each(submission.get('attachments'), function(e, i) {

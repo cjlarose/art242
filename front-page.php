@@ -21,4 +21,14 @@ get_header(); ?>
 			</div><!-- #content -->
 		</div><!-- #primary .site-content -->
 
+<script type="text/template" id="PhotoView">
+<div class="modal">
+	<div class="modal-header">
+		<a href="#" class="close"></a>
+		<h3></h3>
+	</div>
+	<div class="modal-body">
+	</div>
+</div>
+</script>
 <?php get_footer(); ?>

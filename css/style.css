@@ -6,3 +6,6 @@ body {
 }
 .navbar-fixed-top {
 }
+h3 small {
+	margin-left: .5em;
+}
